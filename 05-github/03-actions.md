@@ -32,8 +32,8 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
       - run: npm ci
@@ -81,7 +81,7 @@ on:
 ```yaml
 steps:
   - name: 检出代码
-    uses: actions/checkout@v4
+    uses: actions/checkout@v7
 
   - name: 安装依赖
     run: npm ci
@@ -112,8 +112,8 @@ jobs:
         os: [ubuntu-latest, macos-latest]
         node: [20, 22]
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: ${{ matrix.node }}
       - run: npm test
@@ -124,7 +124,7 @@ jobs:
 ## 缓存
 
 ```yaml
-- uses: actions/cache@v4
+- uses: actions/cache@v6
   with:
     path: ~/.npm
     key: ${{ runner.os }}-npm-${{ hashFiles('package-lock.json') }}
@@ -137,13 +137,13 @@ jobs:
 ## 产物
 
 ```yaml
-- uses: actions/upload-artifact@v4
+- uses: actions/upload-artifact@v7
   with:
     name: coverage
     path: coverage/
     retention-days: 7
 
-- uses: actions/download-artifact@v4
+- uses: actions/download-artifact@v8
   with:
     name: coverage
 ```
@@ -212,7 +212,7 @@ jobs:
   links:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: 检查 README 中的相对 Markdown 链接
         run: |
           set -euo pipefail
@@ -246,7 +246,7 @@ gh workflow run ci.yml -f dry_run=true
 3. **`schedule` 用 UTC**，且仓库 60 天无活动时定时任务会被暂停。
 4. **缓存不能跨分支随意共享**，`key` 设计要区分分支或用 `restore-keys` 兜底。
 5. **artifact 和 cache 都会占存储**，设置 `retention-days` 和清理策略。
-6. **action 版本用 tag（如 `@v4`）**，不要用 `@main`，上游改动会直接影响你的构建。
+6. **action 版本用 tag（如 `@v7`）**，不要用 `@main`，上游改动会直接影响你的构建。
 7. **日志里不要打印 secrets**，即使打码也可能通过变形泄漏（如 base64）。
 
 ## 练习
