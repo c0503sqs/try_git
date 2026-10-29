@@ -1,5 +1,5 @@
 blank_issues_enabled: false
 contact_links:
   - name: 提问与讨论
-    url: https://github.com/OWNER/REPO/discussions
-    about: 把 URL 中的 OWNER/REPO 换成实际仓库；非 bug 的提问请到 Discussions
+    url: https://github.com/c0503sqs/try_git/discussions
+    about: 非 bug 的提问请到 Discussions（需先在仓库 Settings → Features 中启用）
