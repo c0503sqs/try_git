@@ -1,0 +1,57 @@
+name: docs-check
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  links:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 检查 Markdown 相对链接
+        run: |
+          python3 - <<'PY'
+          import os
+          import re
+          import sys
+
+          pattern = re.compile(r'\[[^\]]*\]\(([^)\s]+\.md)(?:#[^)]*)?\)')
+          skip_dirs = {'.git', 'node_modules', '.sandbox'}
+          ok = True
+
+          for dirpath, dirnames, filenames in os.walk('.'):
+              dirnames[:] = [d for d in dirnames if d not in skip_dirs]
+              for name in filenames:
+                  if not name.endswith('.md'):
+                      continue
+                  path = os.path.join(dirpath, name)
+                  with open(path, encoding='utf-8') as fh:
+                      text = fh.read()
+
+                  # 跳过围栏代码块，避免把示例代码里的链接当成真实链接
+                  lines = []
+                  in_fence = False
+                  for line in text.splitlines():
+                      if line.strip().startswith('```'):
+                          in_fence = not in_fence
+                          lines.append('')
+                          continue
+                      lines.append('' if in_fence else line)
+
+                  for target in pattern.findall('\n'.join(lines)):
+                      if target.startswith(('http://', 'https://', 'mailto:')):
+                          continue
+                      resolved = os.path.normpath(os.path.join(dirpath, target))
+                      if not os.path.exists(resolved):
+                          print(f'{path}: MISSING {target}')
+                          ok = False
+
+          sys.exit(0 if ok else 1)
+          PY
